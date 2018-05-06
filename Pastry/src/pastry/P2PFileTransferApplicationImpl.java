@@ -62,7 +62,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 						String original_file_name = "";
 						try {
 							original_file_name = new SimpleInputBuffer(metadata).readUTF();
-							File replica = new File("storage\\replicated.txt");
+							File replica = new File("output\\"+original_file_name);
 							log.append("Moving" +f+ " to "+replica+" original: "+original_file_name+"\n");
 							f.renameTo(replica);
 						} catch (IOException e) {

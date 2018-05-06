@@ -123,7 +123,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 					@Override
 					public void run() {
 						transfer_msg
-								.routeFileTransferRequestDirect(latest_updater);
+							.routeFileTransferRequestDirect(latest_updater);
 					}
 				});
 				log.append("Last update from: " + update.getUserName()

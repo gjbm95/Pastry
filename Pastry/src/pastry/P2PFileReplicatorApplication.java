@@ -29,7 +29,7 @@ import rice.environment.Environment;
 public class P2PFileReplicatorApplication extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private static Environment env;
-	private javax.swing.JLabel bindPortLabel,bootAddressLabel,bootPortLabel,userNameLabel,filenameLabel;
+	private javax.swing.JLabel bindPortLabel,bootAddressLabel,bootPortLabel,userNameLabel,fileNameLabel;
         private javax.swing.JButton startP2PNetworkButton,announceUpdateButton;
         private javax.swing.JTextField bindPortText,bootAddressText,bootPortText,userNameText,fileNameText;
         private JScrollPane scrollableTextLog;
@@ -46,12 +46,14 @@ public class P2PFileReplicatorApplication extends JFrame{
     	bootAddressLabel = new JLabel("Boot IP address");
     	bootPortLabel     = new JLabel("Boot port number");
     	userNameLabel = new JLabel("Enter user name");
+        fileNameLabel = new JLabel("Ingrese el nombre del archivo");
     	startP2PNetworkButton = new JButton("Start P2P network");
     	announceUpdateButton = new JButton("Announce File Update");
     	bindPortText = new JTextField("0",5);
     	bootAddressText = new JTextField("127.0.0.1",15);
     	bootPortText = new JTextField("0", 5);
     	userNameText = new JTextField("Mezbah",15);
+        fileNameText = new JTextField("Archivo",15);
     	logText = new JTextArea();
     	scrollableTextLog = new JScrollPane(logText);
     	scrollableTextLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -68,6 +70,8 @@ public class P2PFileReplicatorApplication extends JFrame{
     	add(bootPortText);
     	add(userNameLabel);
     	add(userNameText);
+        add(fileNameLabel);
+    	add(fileNameText);
     	add(startP2PNetworkButton);
     	add(announceUpdateButton);
     	add(scrollableTextLog);
@@ -123,7 +127,7 @@ public class P2PFileReplicatorApplication extends JFrame{
 				
 				@Override
 				public void run() {
-					File f = new File("storage\\original.txt");
+					File f = new File("storage\\"+fileNameText.getText());
 					node.publishUpdate(new Date(f.lastModified()));
 					logText.append("Announcing last file update time.\n");
 				}
