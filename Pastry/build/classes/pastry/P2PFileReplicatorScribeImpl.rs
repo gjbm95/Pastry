@@ -1,2 +1,0 @@
-com.mezbah.P2PFileReplicatorScribeImpl
-com.mezbah.P2PFileReplicatorScribeImpl$1
