@@ -64,13 +64,13 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 						user, false), endpoint.getLocalNodeHandle());
 	}
 
-	public void publishLastUpdate(String user) {
-		sendMulticast(user);
+	public void publishLastUpdate(String user,String filename) {
+		sendMulticast(user,filename);
 	}
 
-	public void sendMulticast(String user) {
+	public void sendMulticast(String user,String filename) {
 		P2PFileReplicatorContentImpl myMessage = new P2PFileReplicatorContentImpl(
-				endpoint.getLocalNodeHandle(), lastUpdated, "original.txt",
+				endpoint.getLocalNodeHandle(), lastUpdated,filename,
 				user, true);
 		scribe.publish(topic, myMessage);
 		seqNum++;
@@ -116,7 +116,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 		P2PFileReplicatorContentImpl update = (P2PFileReplicatorContentImpl) content;
 		final NodeHandle latest_updater = update.getFrom();
 		final Date latestUpdate_time = update.getLastUpdate();
-		if (update.isUpdateAnnounce()) {
+		/*if (update.isUpdateAnnounce()) {
 			if (latestUpdate_time.after(lastUpdated)) {
 				Thread start_replicate_task = new Thread(new Runnable() {
 
@@ -137,7 +137,21 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 				log.append("Update announcment is older then" + lastUpdated
 						+ "\n");
 			}
-		}
+		}*/
+                
+                Thread start_replicate_task = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						transfer_msg
+							.routeFileTransferRequestDirect(latest_updater);
+					}
+				});
+				log.append("Last update from: " + update.getUserName()
+						+ "\n --file :" + update.getFileName() + "\n updated: "
+						+ latestUpdate_time + "\n");
+				start_replicate_task.start();
+                
 		if (((P2PFileReplicatorContentImpl) content).getFrom() == null) {
 			new Exception("Delivered from null").printStackTrace();
 		}

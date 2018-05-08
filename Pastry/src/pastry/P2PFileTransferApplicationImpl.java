@@ -35,6 +35,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 	private Node node;
 	private Environment env;
 	private JTextArea log;
+        private String filename; 
 	
 	public P2PFileTransferApplicationImpl(Node node, final PastryNodeFactory factory,JTextArea logging){
 		this.endpoint  = node.buildEndpoint(this, "filetransfer_instance");
@@ -164,8 +165,8 @@ public class P2PFileTransferApplicationImpl implements Application {
 				send_ini.flip();
 				log.append("Sending initial messege :  " + send_ini);
 				sender.sendMsg(send_ini, (byte)1, null);
-				
-				final File f = new File("storage\\original.txt");
+				System.out.println("Nombre del archivo "+Utils.filename);
+				final File f = new File("storage\\"+Utils.filename);
 				if(!f.exists()){
 					log.append("File "+f+ "does not exist !"+"\n");
 					System.exit(-1);

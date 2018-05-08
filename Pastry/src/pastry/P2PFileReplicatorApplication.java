@@ -127,8 +127,9 @@ public class P2PFileReplicatorApplication extends JFrame{
 				
 				@Override
 				public void run() {
+                                        Utils.filename = fileNameText.getText();
 					File f = new File("storage\\"+fileNameText.getText());
-					node.publishUpdate(new Date(f.lastModified()));
+					node.publishUpdate(new Date(f.lastModified()),fileNameText.getText());
 					logText.append("Announcing last file update time.\n");
 				}
 			});

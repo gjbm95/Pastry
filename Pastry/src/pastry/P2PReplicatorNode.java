@@ -64,9 +64,9 @@ public class P2PReplicatorNode {
 		this.log.append("Subscribing to the file replicator network..\n");
 	}
 
-	public void publishUpdate(Date update_Date) {
+	public void publishUpdate(Date update_Date,String filename) {
 		app_scribe.setLastUpdated(update_Date);
-		app_scribe.publishLastUpdate(user);
+		app_scribe.publishLastUpdate(user,filename);
 		log.append("Announcing last update time\n");
 	}
 
