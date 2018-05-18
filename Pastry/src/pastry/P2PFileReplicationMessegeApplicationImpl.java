@@ -34,7 +34,7 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 	   * Called to directly send a message to the nh
 	   */
 	  public void routeFileTransferRequestDirect(NodeHandle nh) {
-		log.append("Sending request direct to "+nh+"\n");    
+		log.append("Sending request direct to "+nh+" Tiempo: "+Utils.obtenerHora()+"\n");    
 	    Message msg = new P2PFileReplicationMessegeImpl(nh,node.getLocalNodeHandle(), user, "transfer_ok");
 	    endpoint.route(null, msg, nh);
 	  }
@@ -48,7 +48,7 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 	public void deliver(Id id, Message message) {
 		P2PFileReplicationMessegeImpl msg = (P2PFileReplicationMessegeImpl) message;
 		final NodeHandle update_reciever = (NodeHandle) msg.getFrom();
-		log.append("Sending file to :"+update_reciever+"\n");
+		log.append("Enviando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
 		Thread start_transfer = new Thread(new Runnable() {
 			
 			@Override
@@ -62,7 +62,7 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 
 	@Override
 	public void update(NodeHandle handle, boolean joined) {
-		log.append("Another node joined: "+handle+" "+ joined+"\n");
+		log.append("Otro nodo se unio: "+handle+" "+ joined+" Tiempo: "+Utils.obtenerHora()+"\n");
 
 	}
 

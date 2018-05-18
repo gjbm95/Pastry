@@ -217,7 +217,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 
 	@Override
 	public void update(NodeHandle handle, boolean joined) {
-		log.append("New node joined :"+handle+" : "+joined+"\n");
+		log.append("Nuevo nodo unido :"+handle+" : "+joined+" Tiempo: "+Utils.obtenerHora()+" \n");
 
 	}
 

@@ -42,23 +42,23 @@ public class P2PFileReplicatorApplication extends JFrame{
         }
     
     private void initComponents(){
-    	bindPortLabel = new JLabel("Port number");
-    	bootAddressLabel = new JLabel("Boot IP address");
-    	bootPortLabel     = new JLabel("Boot port number");
+    	bindPortLabel = new JLabel("Puerto del nodo");
+    	bootAddressLabel = new JLabel("Direccion del fantasma");
+    	bootPortLabel     = new JLabel("Puerto del Fantasma");
     	userNameLabel = new JLabel("Enter user name");
         fileNameLabel = new JLabel("Ingrese el nombre del archivo");
-    	startP2PNetworkButton = new JButton("Start P2P network");
-    	announceUpdateButton = new JButton("Announce File Update");
+    	startP2PNetworkButton = new JButton("Iniciar Conexion");
+    	announceUpdateButton = new JButton("Compartir Archivo");
     	bindPortText = new JTextField("0",5);
     	bootAddressText = new JTextField("127.0.0.1",15);
     	bootPortText = new JTextField("0", 5);
-    	userNameText = new JTextField("Mezbah",15);
+    	userNameText = new JTextField("Nodo1",15);
         fileNameText = new JTextField("Archivo",15);
     	logText = new JTextArea();
     	scrollableTextLog = new JScrollPane(logText);
     	scrollableTextLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     	scrollableTextLog.setPreferredSize(new Dimension(250,250));
-    	setTitle("P2P file replicator");
+    	setTitle("Replicador de Archivos, en P2P");
     	startP2PNetworkButton.addActionListener(new StartP2PNetworkListener());
     	announceUpdateButton.addActionListener(new AnnounceFileUpdateListener());
     	setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));

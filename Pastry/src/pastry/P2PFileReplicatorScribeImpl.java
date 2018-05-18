@@ -184,7 +184,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 
 	@Override
 	public void subscribeSuccess(Collection<Topic> topics) {
-		log.append("Subscribe successfull..\n");
+		log.append("Subscripcion exitosa - Tiempo "+Utils.obtenerHora()+"\n");
 
 	}
 
