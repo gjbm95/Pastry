@@ -1,5 +1,6 @@
 package pastry;
 
+import Dominio.Sistema;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,16 +30,18 @@ import rice.environment.Environment;
 public class P2PFileReplicatorApplication extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private static Environment env;
-	private javax.swing.JLabel bindPortLabel,bootAddressLabel,bootPortLabel,userNameLabel,fileNameLabel;
-        private javax.swing.JButton startP2PNetworkButton,announceUpdateButton;
-        private javax.swing.JTextField bindPortText,bootAddressText,bootPortText,userNameText,fileNameText;
+	private javax.swing.JLabel bindPortLabel,bootAddressLabel,bootPortLabel,userNameLabel,fileNameLabel,searchfileNameLabel;
+        private javax.swing.JButton startP2PNetworkButton,announceUpdateButton,searchButton;
+        private javax.swing.JTextField bindPortText,bootAddressText,bootPortText,userNameText,fileNameText,searchfileText;
         private JScrollPane scrollableTextLog;
         private JTextArea  logText;
         private P2PReplicatorNode node;
         private String user;
+        private Sistema sistema = Sistema.obtenerInstancia();
 
         public P2PFileReplicatorApplication(){
 		initComponents();
+                this.sistema.cargarRecursos();
         }
     
     private void initComponents(){
@@ -46,14 +49,17 @@ public class P2PFileReplicatorApplication extends JFrame{
     	bootAddressLabel = new JLabel("Direccion del fantasma");
     	bootPortLabel     = new JLabel("Puerto del Fantasma");
     	userNameLabel = new JLabel("Enter user name");
-        fileNameLabel = new JLabel("Ingrese el nombre del archivo");
+        fileNameLabel = new JLabel("Archivo a compartir");
+        searchfileNameLabel = new JLabel("Buscar archivo");
     	startP2PNetworkButton = new JButton("Iniciar Conexion");
     	announceUpdateButton = new JButton("Compartir Archivo");
+        searchButton = new JButton("Descargar Archivo");
     	bindPortText = new JTextField("0",5);
     	bootAddressText = new JTextField("127.0.0.1",15);
     	bootPortText = new JTextField("0", 5);
     	userNameText = new JTextField("Nodo1",15);
         fileNameText = new JTextField("Archivo",15);
+        searchfileText = new JTextField("Archivo",15);
     	logText = new JTextArea();
     	scrollableTextLog = new JScrollPane(logText);
     	scrollableTextLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -61,7 +67,8 @@ public class P2PFileReplicatorApplication extends JFrame{
     	setTitle("Replicador de Archivos, en P2P");
     	startP2PNetworkButton.addActionListener(new StartP2PNetworkListener());
     	announceUpdateButton.addActionListener(new AnnounceFileUpdateListener());
-    	setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
+    	searchButton.addActionListener(new DownloadListener());
+        setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
     	add(bindPortLabel);
     	add(bindPortText);
     	add(bootAddressLabel);
@@ -72,6 +79,9 @@ public class P2PFileReplicatorApplication extends JFrame{
     	add(userNameText);
         add(fileNameLabel);
     	add(fileNameText);
+        add(searchfileNameLabel);
+        add(searchfileText);
+        add(searchButton);
     	add(startP2PNetworkButton);
     	add(announceUpdateButton);
     	add(scrollableTextLog);
@@ -82,6 +92,7 @@ public class P2PFileReplicatorApplication extends JFrame{
  
     private void exit(){
     	dispose();
+        if (env!=null)
     	env.destroy();
     	System.exit(0);
     }
@@ -134,6 +145,23 @@ public class P2PFileReplicatorApplication extends JFrame{
 				}
 			});
 			startPublish.start();
+						
+		}
+    	
+    }
+    
+    private class DownloadListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Thread startSearch = new Thread(new Runnable() {	
+				@Override
+				public void run() {
+                                 //Inicio de busqueda
+                                 node.searchFile(searchfileText.getText());
+				}
+			});
+			startSearch.start();
 						
 		}
     	

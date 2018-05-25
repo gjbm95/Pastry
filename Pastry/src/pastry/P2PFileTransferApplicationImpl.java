@@ -66,6 +66,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 							File replica = new File("output\\"+original_file_name);
 							log.append("Moving" +f+ " to "+replica+" original: "+original_file_name+"\n");
 							f.renameTo(replica);
+                                                        log.append("Descarga finalizada \n");
 						} catch (IOException e) {
 							log.append("Error deserializing file: "+ e+"\n");
 						}

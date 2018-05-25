@@ -1,5 +1,6 @@
 package pastry;
 
+import Dominio.Sistema;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,7 +43,8 @@ public class P2PReplicatorNode {
 		node = factory.newNode();
 		// construct a new file transfer application
 		app_file = new P2PFileTransferApplicationImpl(node, factory,log);
-		// construct a new scribe application
+		Sistema.obtenerInstancia().setApp_file(app_file);
+                 // construct a new scribe application
 		File f = new File("storage\\original.txt");
 		app_msg = new P2PFileReplicationMessegeApplicationImpl(node, user, log, app_file);
 		app_scribe = new P2PFileReplicatorScribeImpl(node, app_msg,log,new Date(f.lastModified()));
@@ -69,5 +71,10 @@ public class P2PReplicatorNode {
 		app_scribe.publishLastUpdate(user,filename);
 		log.append("Announcing last update time\n");
 	}
+        
+        public void searchFile(String filename){
+                app_scribe.searchFile(user,filename);
+		log.append("Buscando archivo... "+Utils.obtenerHora()+ "\n");
+        }
 
 }

@@ -33,9 +33,9 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 	  /**
 	   * Called to directly send a message to the nh
 	   */
-	  public void routeFileTransferRequestDirect(NodeHandle nh) {
+	  public void routeFileTransferRequestDirect(NodeHandle nh,String message) {
 		log.append("Sending request direct to "+nh+" Tiempo: "+Utils.obtenerHora()+"\n");    
-	    Message msg = new P2PFileReplicationMessegeImpl(nh,node.getLocalNodeHandle(), user, "transfer_ok");
+	    Message msg = new P2PFileReplicationMessegeImpl(nh,node.getLocalNodeHandle(), user, message);
 	    endpoint.route(null, msg, nh);
 	  }
 
@@ -47,17 +47,19 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 	@Override
 	public void deliver(Id id, Message message) {
 		P2PFileReplicationMessegeImpl msg = (P2PFileReplicationMessegeImpl) message;
-		final NodeHandle update_reciever = (NodeHandle) msg.getFrom();
-		log.append("Enviando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
-		Thread start_transfer = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				file_app.sendMessegeDirect(update_reciever);
-				
-			}
-		});
-		start_transfer.start();
+                 final NodeHandle update_reciever = (NodeHandle) msg.getFrom();
+		if (msg.getMessege().equals("trans_ok")){
+                    log.append("Enviando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
+                    Thread start_transfer = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                    file_app.sendMessegeDirect(update_reciever);
+                            }
+                    });
+                    start_transfer.start();
+                }else if (msg.getMessege().equals("lotengoyo")){
+                   log.append("Solicitando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
+                }
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package pastry;
 
+import Dominio.Sistema;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,6 +20,7 @@ import rice.p2p.scribe.ScribeContent;
 import rice.p2p.scribe.ScribeImpl;
 import rice.p2p.scribe.ScribeMultiClient;
 import rice.p2p.scribe.Topic;
+import rice.pastry.PastryNodeFactory;
 import rice.pastry.commonapi.PastryIdFactory;
 
 public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
@@ -30,6 +34,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 	private Date lastUpdated;
 	private JTextArea log;
 	private P2PFileReplicationMessegeApplicationImpl transfer_msg;
+        private P2PFileTransferApplicationImpl file_app;
 
 	/**
 	 * The constructor for this scribe client. It will construct the
@@ -67,6 +72,10 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 	public void publishLastUpdate(String user,String filename) {
 		sendMulticast(user,filename);
 	}
+        
+        public void searchFile(String user,String filename) {
+		sendMulticast(user,filename,"search");
+	}
 
 	public void sendMulticast(String user,String filename) {
 		P2PFileReplicatorContentImpl myMessage = new P2PFileReplicatorContentImpl(
@@ -74,6 +83,16 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 				user, true);
 		scribe.publish(topic, myMessage);
 		seqNum++;
+	}
+        
+        public void sendMulticast(String user,String filename,String function) {
+                if (function.equals("search")){
+                    P2PFileReplicatorContentImpl myMessage = new P2PFileReplicatorContentImpl(
+                                    endpoint.getLocalNodeHandle(), function,filename,
+                                    user, true);
+                    scribe.publish(topic, myMessage);
+                    seqNum++;
+                }
 	}
 
 	/**
@@ -113,44 +132,38 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 
 	@Override
 	public void deliver(Topic topic, ScribeContent content) {
-		P2PFileReplicatorContentImpl update = (P2PFileReplicatorContentImpl) content;
-		final NodeHandle latest_updater = update.getFrom();
-		final Date latestUpdate_time = update.getLastUpdate();
-		/*if (update.isUpdateAnnounce()) {
-			if (latestUpdate_time.after(lastUpdated)) {
-				Thread start_replicate_task = new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						transfer_msg
-							.routeFileTransferRequestDirect(latest_updater);
-					}
-				});
-				log.append("Last update from: " + update.getUserName()
-						+ "\n --file :" + update.getFileName() + "\n updated: "
-						+ latestUpdate_time + "\n");
-				start_replicate_task.start();
-			} else {
-				log.append("Last update from: " + update.getUserName()
-						+ "\n --file :" + update.getFileName() + "\n updated: "
-						+ latestUpdate_time + "\n");
-				log.append("Update announcment is older then" + lastUpdated
-						+ "\n");
-			}
-		}*/
-                
+		P2PFileReplicatorContentImpl message = (P2PFileReplicatorContentImpl) content;
+		final NodeHandle latest_updater = message.getFrom();
                 Thread start_replicate_task = new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						transfer_msg
-							.routeFileTransferRequestDirect(latest_updater);
-					}
-				});
-				log.append("Last update from: " + update.getUserName()
-						+ "\n --file :" + update.getFileName() + "\n updated: "
-						+ latestUpdate_time + "\n");
-				start_replicate_task.start();
+                    @Override
+                    public void run() {
+
+                        if (!message.getFunction().equals("search")){
+                            transfer_msg
+                                    .routeFileTransferRequestDirect(latest_updater,"trans_ok");
+                        }else if (message.getFunction().equals("search")){
+                             
+                            Sistema sistema = Sistema.obtenerInstancia();
+                            if(sistema.buscarRecurso(message.getFileName())){
+                               log.append("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                               Thread start_transfer = new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                Utils.filename = message.getFileName();
+                                                file_app = Sistema.obtenerInstancia().getApp_file();
+                                                file_app.sendMessegeDirect(latest_updater);
+                                        }
+                                });
+                                start_transfer.start();
+                            }else{
+                               log.append("Archivo no encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                            }
+
+                        }
+                    }
+		});
+		start_replicate_task.start();
                 
 		if (((P2PFileReplicatorContentImpl) content).getFrom() == null) {
 			new Exception("Delivered from null").printStackTrace();

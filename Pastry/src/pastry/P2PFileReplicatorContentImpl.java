@@ -12,6 +12,7 @@ public class P2PFileReplicatorContentImpl implements ScribeContent {
 	private Date lastUpdate;
 	private String userName;
 	private String fileName;
+        private String function;
 	private boolean updateAnnounce;
 	
 	public P2PFileReplicatorContentImpl(NodeHandle from,String userName,boolean updateAnnounce){
@@ -23,6 +24,14 @@ public class P2PFileReplicatorContentImpl implements ScribeContent {
 	public P2PFileReplicatorContentImpl(NodeHandle from, Date lastUpdate,String fileName,String userName,boolean updateAnnounce) {
 		this.from = from;
 		this.lastUpdate = lastUpdate;
+		this.fileName = fileName;
+		this.userName = userName;
+		this.updateAnnounce = updateAnnounce;
+	}
+        
+        public P2PFileReplicatorContentImpl(NodeHandle from,String function,String fileName,String userName,boolean updateAnnounce) {
+		this.from = from;
+		this.function = function;
 		this.fileName = fileName;
 		this.userName = userName;
 		this.updateAnnounce = updateAnnounce;
@@ -48,4 +57,11 @@ public class P2PFileReplicatorContentImpl implements ScribeContent {
 		return updateAnnounce;
 	}
 
+        public String getFunction() {
+            return function;
+        }
+
+        public void setFunction(String function) {
+            this.function = function;
+        }
 }
