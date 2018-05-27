@@ -147,6 +147,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
                             Sistema sistema = Sistema.obtenerInstancia();
                             if(sistema.buscarRecurso(message.getFileName())){
                                log.append("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                               System.out.println("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
                                Thread start_transfer = new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -158,6 +159,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
                                 start_transfer.start();
                             }else{
                                log.append("Archivo no encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                               System.out.println("Archivo no encontrado - Tiempo "+Utils.obtenerHora()+"\n");
                             }
 
                         }
@@ -198,7 +200,7 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 	@Override
 	public void subscribeSuccess(Collection<Topic> topics) {
 		log.append("Subscripcion exitosa - Tiempo "+Utils.obtenerHora()+"\n");
-
+                System.out.println("Subscripcion exitosa - Tiempo "+Utils.obtenerHora()+"\n");
 	}
 
 	public boolean isRoot() {

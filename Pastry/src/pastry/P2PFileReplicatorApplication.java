@@ -13,6 +13,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
 import java.util.Date;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -119,16 +121,14 @@ public class P2PFileReplicatorApplication extends JFrame{
 						ex.printStackTrace();
 					} catch (Exception ex) {
 						logText.append("Could not join the pestry ring\n");
+                                                System.out.println("No fue posible unirse al anillo de Pastry.\n");
 					}
-					
 				}
 			});
-			startNode.start();
-			
-						
+			startNode.start();	
 		}
-    	
     }
+    
     
     private class AnnounceFileUpdateListener implements ActionListener{
 
@@ -142,6 +142,7 @@ public class P2PFileReplicatorApplication extends JFrame{
 					File f = new File("storage\\"+fileNameText.getText());
 					node.publishUpdate(new Date(f.lastModified()),fileNameText.getText());
 					logText.append("Announcing last file update time.\n");
+                                        System.out.println("Announcing last file update time.\n");
 				}
 			});
 			startPublish.start();
@@ -216,8 +217,6 @@ public class P2PFileReplicatorApplication extends JFrame{
 	
     
     public static void main(String[] args) throws Exception {
-			
-
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -234,16 +233,87 @@ public class P2PFileReplicatorApplication extends JFrame{
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(P2PFileReplicatorApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+        System.out.println("------------------------------------------------");
+        System.out.println("Bienvenido al simulador de Pastry");
+        System.out.println("------------------------------------------------");
+        System.out.println("Como desea ejecutar la aplicacion?");
+        System.out.println("------------------------------------------------");
+        System.out.println("1.- GUI (Interfaz gráfica)");
+        System.out.println("2.- Linea de comandos");
+        System.out.println("3.- Salir");
+        System.out.println("------------------------------------------------");
+        System.out.println("Escriba:");
+        Scanner reader = new Scanner(System.in);
+        int numero = 0;
+                while (numero != 3){
+                       try {
+                           numero = reader.nextInt();
+                                 if(numero == 1){
+                                     java.awt.EventQueue.invokeLater(new Runnable() {
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                new P2PFileReplicatorApplication().setVisible(true);
-            }
-        });
-				
+                                         public void run() {
+                                             new P2PFileReplicatorApplication().setVisible(true);
+                                         }
+                                     });
+                                 }
+                                 if(numero == 2){
+                                    new P2PFileReplicatorApplication().appTerminal();
+                                 }
+                       } catch (InputMismatchException ime){
+                         System.out.println("¡Cuidado! Solo puedes insertar números. ");
+                         reader.next();
+                       }
+                }
 	}
-
+    
+    public void appTerminal(){
+        System.out.println("----------------------------------------------------");
+        System.out.println("Que desea realizar");
+        System.out.println("----------------------------------------------------");
+        System.out.println("Asignar usuario -> user [nombre de usuario]");
+        System.out.println("Asignar red -> network [ip fantasma] [puerto fantasma] [puerto nodo]");
+        System.out.println("Buscar recurso -> search [nombre del archivo]");
+        System.out.println("Salir -> exit");
+        System.out.println("----------------------------------------------------");
+        System.out.println("Escriba:");
+        Scanner reader = new Scanner(System.in);
+        String opcion = "";
+                while (!opcion.equals("exit")){
+                       try {
+                           opcion = reader.nextLine();
+                                 if(opcion.contains("user")){
+                                     String[] opciones = opcion.split(" ");
+                                     user = opciones[1];                        
+                                 }
+                                 if(opcion.contains("search")){
+                                    String[] opciones = opcion.split(" ");
+                                    node.searchFile(opciones[1]);
+                                 }
+                                 if(opcion.contains("network")){
+                                     String[] opciones = opcion.split(" ");
+                                   try {
+						env = new Environment();
+						env.getParameters().setString("nat_search_policy", "never");
+						final InetAddress addr = InetAddress.getByName(opciones[1]);
+						InetSocketAddress bootAddress = new InetSocketAddress(addr,Integer.parseInt(opciones[2]));
+                                                if(user==null)
+                                                user = "node";
+                                                logText = new JTextArea();
+						node = new P2PReplicatorNode(Integer.parseInt(opciones[3]), bootAddress, env, user,logText);
+					} catch (UnknownHostException ex) {
+						ex.printStackTrace();
+					} catch (Exception ex) {
+                                                System.out.println("No fue posible unirse al anillo de Pastry.\n");
+					}
+                                 }
+                                 if(opcion.contains("exit")){
+                                     System.exit(0);
+                                 }
+                       } catch (InputMismatchException ime){
+                         System.out.println("¡Cuidado! Solo puedes insertar números. ");
+                         reader.next();
+                       }
+                }
+   
+    }
 }

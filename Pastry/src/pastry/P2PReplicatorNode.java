@@ -64,17 +64,20 @@ public class P2PReplicatorNode {
 		}
 		app_scribe.subscribe(this.user);
 		this.log.append("Subscribing to the file replicator network..\n");
+                System.out.println("Subscribing to the file replicator network..\n");
 	}
 
 	public void publishUpdate(Date update_Date,String filename) {
 		app_scribe.setLastUpdated(update_Date);
 		app_scribe.publishLastUpdate(user,filename);
 		log.append("Announcing last update time\n");
+                System.out.println("Announcing last update time\n");
 	}
         
         public void searchFile(String filename){
                 app_scribe.searchFile(user,filename);
 		log.append("Buscando archivo... "+Utils.obtenerHora()+ "\n");
+                System.out.println("Buscando archivo... "+Utils.obtenerHora()+ "\n");
         }
 
 }

@@ -34,7 +34,8 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
 	   * Called to directly send a message to the nh
 	   */
 	  public void routeFileTransferRequestDirect(NodeHandle nh,String message) {
-		log.append("Sending request direct to "+nh+" Tiempo: "+Utils.obtenerHora()+"\n");    
+		log.append("Sending request direct to "+nh+" Tiempo: "+Utils.obtenerHora()+"\n"); 
+                System.out.println("Sending request direct to "+nh+" Tiempo: "+Utils.obtenerHora()+"\n");
 	    Message msg = new P2PFileReplicationMessegeImpl(nh,node.getLocalNodeHandle(), user, message);
 	    endpoint.route(null, msg, nh);
 	  }
@@ -50,6 +51,7 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
                  final NodeHandle update_reciever = (NodeHandle) msg.getFrom();
 		if (msg.getMessege().equals("trans_ok")){
                     log.append("Enviando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
+                    System.out.println("Enviando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
                     Thread start_transfer = new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -59,13 +61,14 @@ public class P2PFileReplicationMessegeApplicationImpl implements Application {
                     start_transfer.start();
                 }else if (msg.getMessege().equals("lotengoyo")){
                    log.append("Solicitando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
+                   System.out.println("Solicitando archivo a :"+update_reciever+" Tiempo: "+Utils.obtenerHora()+"\n");
                 }
 	}
 
 	@Override
 	public void update(NodeHandle handle, boolean joined) {
 		log.append("Otro nodo se unio: "+handle+" "+ joined+" Tiempo: "+Utils.obtenerHora()+"\n");
-
+                System.out.println("Otro nodo se unio: "+handle+" "+ joined+" Tiempo: "+Utils.obtenerHora()+"\n");
 	}
 
 	public Endpoint getEndpoint() {

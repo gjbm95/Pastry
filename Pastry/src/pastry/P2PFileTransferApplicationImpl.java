@@ -50,12 +50,13 @@ public class P2PFileTransferApplicationImpl implements Application {
 					@Override
 					public void receiveException(Exception ioe) {
 						log.append("Error in file transfer : "+ ioe+"\n");
+                                                System.out.println("Error in file transfer : "+ ioe+"\n");
 					}
 					
 					@Override
 					public void messageReceived(ByteBuffer bb) {
 						log.append("Messege recieved "+ bb+"\n");
-						
+						System.out.println("Messege recieved "+ bb+"\n");
 					}
 					
 					@Override
@@ -65,10 +66,13 @@ public class P2PFileTransferApplicationImpl implements Application {
 							original_file_name = new SimpleInputBuffer(metadata).readUTF();
 							File replica = new File("output\\"+original_file_name);
 							log.append("Moving" +f+ " to "+replica+" original: "+original_file_name+"\n");
-							f.renameTo(replica);
+							System.out.println("Moving" +f+ " to "+replica+" original: "+original_file_name+"\n");
+                                                        f.renameTo(replica);
                                                         log.append("Descarga finalizada \n");
+                                                        System.out.println("Descarga finalizada \n");
 						} catch (IOException e) {
 							log.append("Error deserializing file: "+ e+"\n");
+                                                        System.out.println("Error deserializing file: "+ e+"\n");
 						}
 						
 					}
@@ -108,7 +112,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 			}
 			double percent = 100.0 * bytesTransferred/total;
 			log.append(s+" : "+percent +"% of "+receipt+"\n");
-			
+			System.out.println(s+" : "+percent +"% of "+receipt+"\n");
 		}
 
 		@Override
@@ -121,7 +125,8 @@ public class P2PFileTransferApplicationImpl implements Application {
 				s= "uploaded";
 			}
 			double percent = 100.0 * bytesTransferred/total;
-			log.append(s+" : "+percent +"% of "+receipt+"\n");			
+			log.append(s+" : "+percent +"% of "+receipt+"\n");
+                        System.out.println(s+" : "+percent +"% of "+receipt+"\n");
 		}
 
 		@Override
@@ -132,7 +137,8 @@ public class P2PFileTransferApplicationImpl implements Application {
 			}else {
 				s= "upload";
 			}
-			log.append(" canceled "+s+" of "+receipt+"\n");			
+			log.append(" canceled "+s+" of "+receipt+"\n");
+                        System.out.println(" canceled "+s+" of "+receipt+"\n");
 		}
 
 		@Override
@@ -144,13 +150,14 @@ public class P2PFileTransferApplicationImpl implements Application {
 				s= "upload";
 			}
 			log.append(" failed to  "+s+" of "+receipt+"\n");
-			
+			System.out.println(" failed to  "+s+" of "+receipt+"\n");
 		}
 		
 	}
 	
 	public void sendMessegeDirect(NodeHandle nh){
 		log.append("Opening Application socket to "+nh+"\n");
+                System.out.println("Opening Application socket to "+nh+"\n");
 		endpoint.connect(nh, new AppSocketReceiver() {
 			
 			@Override
@@ -165,7 +172,8 @@ public class P2PFileTransferApplicationImpl implements Application {
 				send_ini.put((byte)5);
 				send_ini.flip();
 				log.append("Sending initial messege :  " + send_ini);
-				sender.sendMsg(send_ini, (byte)1, null);
+				System.out.println("Sending initial messege :  " + send_ini);
+                                sender.sendMsg(send_ini, (byte)1, null);
 				System.out.println("Nombre del archivo "+Utils.filename);
 				final File f = new File("storage\\"+Utils.filename);
 				if(!f.exists()){
@@ -179,13 +187,13 @@ public class P2PFileTransferApplicationImpl implements Application {
 					@Override
 					public void receiveResult(FileReceipt result) {
 						log.append("Sending complete..."+ result+"\n");
-												
+					        System.out.println("Sending complete..."+ result+"\n");						
 					}
 
 					@Override
 					public void receiveException(Exception exception) {
 						log.append("Error sending ..."+f+ " "+ exception+"\n");
-												
+						System.out.println("Error sending ..."+f+ " "+ exception+"\n");						
 					}
 				});
 			}
@@ -214,12 +222,13 @@ public class P2PFileTransferApplicationImpl implements Application {
 	@Override
 	public void deliver(Id id, Message message) {
 		log.append("Received: "+message+"\n");
+                System.out.println("Received: "+message+"\n");
 	}
 
 	@Override
 	public void update(NodeHandle handle, boolean joined) {
 		log.append("Nuevo nodo unido :"+handle+" : "+joined+" Tiempo: "+Utils.obtenerHora()+" \n");
-
+                System.out.println("Nuevo nodo unido :"+handle+" : "+joined+" Tiempo: "+Utils.obtenerHora()+" \n");
 	}
 
 	public Endpoint getEndpoint() {
