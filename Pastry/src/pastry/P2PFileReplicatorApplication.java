@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import java.nio.CharBuffer;
 import java.util.Date;
 import java.util.InputMismatchException;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.BoxLayout;
@@ -217,6 +218,8 @@ public class P2PFileReplicatorApplication extends JFrame{
 	
     
     public static void main(String[] args) throws Exception {
+      
+        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -233,6 +236,20 @@ public class P2PFileReplicatorApplication extends JFrame{
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(P2PFileReplicatorApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        
+        if(args.length>0){
+           String [] archivos = {"archivo1.jpg","archivo2.mp3","archivo3.txt"};
+           Random r = new Random();
+           Integer valor = r.nextInt(3);
+           
+           if(args[0].equals("node"))
+           new P2PFileReplicatorApplication()
+           .pilotoAutomatico(args[1],1000,Utils.seleccionarPuerto(),"autopilot", archivos[valor]);
+           if(args[0].equals("central"))
+           new P2PFileReplicatorApplication()
+           .pilotoAutomatico(args[1],1000,1000,"autopilot", archivos[valor]);
+           
+        }else{
         System.out.println("------------------------------------------------");
         System.out.println("Bienvenido al simulador de Pastry");
         System.out.println("------------------------------------------------");
@@ -264,6 +281,9 @@ public class P2PFileReplicatorApplication extends JFrame{
                          reader.next();
                        }
                 }
+                
+        }
+        
 	}
     
     public void appTerminal(){
@@ -315,5 +335,24 @@ public class P2PFileReplicatorApplication extends JFrame{
                        }
                 }
    
+    }
+    
+    public synchronized void pilotoAutomatico(String central,int port,int portnode,String user,String file){
+           try {
+                    env = new Environment();
+                    env.getParameters().setString("nat_search_policy", "never");
+                    final InetAddress addr = InetAddress.getByName(central);
+                    InetSocketAddress bootAddress = new InetSocketAddress(addr,port);
+                    if(user==null)
+                    user = "node";
+                    logText = new JTextArea();
+                    node = new P2PReplicatorNode(portnode, bootAddress, env, user,logText);
+                    node.searchFile(file);
+            } catch (UnknownHostException ex) {
+                    ex.printStackTrace();
+            } catch (Exception ex) {
+                    System.out.println("No fue posible unirse al anillo de Pastry.\n");
+            }
+              
     }
 }

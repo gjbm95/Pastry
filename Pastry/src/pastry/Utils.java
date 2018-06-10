@@ -6,10 +6,16 @@
 package pastry;
 
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,5 +46,14 @@ public class Utils {
 
         BigInteger hash = new BigInteger (1, algoritmoCompendio.digest() );
         return hash.mod(BigInteger.valueOf(20));
+    }
+    
+     public static int seleccionarPuerto(){
+        Integer valor =0;
+        while ((valor<2001)||(valor>5000)){
+            Random r = new Random();
+            valor = r.nextInt(5000);
+        }
+        return valor;
     }
 }
