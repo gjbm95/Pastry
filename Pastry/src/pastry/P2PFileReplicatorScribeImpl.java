@@ -1,10 +1,15 @@
 package pastry;
 
 import Dominio.Sistema;
+import com.Entidades.NodoRF;
+import com.Utils.SistemaUtil;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JTextArea;
 
@@ -146,17 +151,22 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
                              
                             Sistema sistema = Sistema.obtenerInstancia();
                             if(sistema.buscarRecurso(message.getFileName())){
-                               log.append("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
-                               System.out.println("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
-                               Thread start_transfer = new Thread(new Runnable() {
+                                try {
+                                    log.append("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                                    System.out.println("Archivo encontrado - Tiempo "+Utils.obtenerHora()+"\n");
+                                    SistemaUtil.reportarTiempo("search", "final", new NodoRF(Utils.nodename,Utils.nodeport));
+                                    Thread start_transfer = new Thread(new Runnable() {
                                         @Override
                                         public void run() {
-                                                Utils.filename = message.getFileName();
-                                                file_app = Sistema.obtenerInstancia().getApp_file();
-                                                file_app.sendMessegeDirect(latest_updater);
+                                            Utils.filename = message.getFileName();
+                                            file_app = Sistema.obtenerInstancia().getApp_file();
+                                            file_app.sendMessegeDirect(latest_updater);
                                         }
-                                });
-                                start_transfer.start();
+                                    });
+                                    start_transfer.start();
+                                } catch (NoSuchAlgorithmException ex) {
+                                    Logger.getLogger(P2PFileReplicatorScribeImpl.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             }else{
                                log.append("Archivo no encontrado - Tiempo "+Utils.obtenerHora()+"\n");
                                System.out.println("Archivo no encontrado - Tiempo "+Utils.obtenerHora()+"\n");
@@ -201,6 +211,11 @@ public class P2PFileReplicatorScribeImpl implements ScribeMultiClient,
 	public void subscribeSuccess(Collection<Topic> topics) {
 		log.append("Subscripcion exitosa - Tiempo "+Utils.obtenerHora()+"\n");
                 System.out.println("Subscripcion exitosa - Tiempo "+Utils.obtenerHora()+"\n");
+            try {
+                SistemaUtil.reportarTiempo("addnode", "final", new NodoRF(Utils.nodename,Utils.nodeport));
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(P2PFileReplicatorScribeImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
 
 	public boolean isRoot() {

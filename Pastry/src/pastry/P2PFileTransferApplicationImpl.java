@@ -1,8 +1,13 @@
 package pastry;
 
+import com.Entidades.NodoRF;
+import com.Utils.SistemaUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JTextArea;
 
@@ -63,6 +68,7 @@ public class P2PFileTransferApplicationImpl implements Application {
 					public void fileReceived(File f, ByteBuffer metadata) {
 						String original_file_name = "";
 						try {
+                                                        SistemaUtil.reportarTiempo("search", "final", new NodoRF(Utils.nodename,Utils.nodeport));
 							original_file_name = new SimpleInputBuffer(metadata).readUTF();
 							File replica = new File("output\\"+original_file_name);
 							log.append("Moving" +f+ " to "+replica+" original: "+original_file_name+"\n");
@@ -73,7 +79,9 @@ public class P2PFileTransferApplicationImpl implements Application {
 						} catch (IOException e) {
 							log.append("Error deserializing file: "+ e+"\n");
                                                         System.out.println("Error deserializing file: "+ e+"\n");
-						}
+						} catch (NoSuchAlgorithmException ex) { 
+                                                Logger.getLogger(P2PFileTransferApplicationImpl.class.getName()).log(Level.SEVERE, null, ex);
+                                            } 
 						
 					}
 				}, env);

@@ -5,6 +5,9 @@
  */
 package pastry;
 
+import com.ControladoresRed.ConexionUtils;
+import com.ControladoresRed.Mensaje;
+import com.Entidades.NodoRF;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -23,6 +26,10 @@ import java.util.logging.Logger;
  */
 public class Utils {
     public static String filename=""; 
+    public static String servidorTiempo;
+    public static String nodename;
+    public static int nodeport; 
+    public static boolean informarTiempo = true;
     
     public static String obtenerHora(){
     Calendar calendario = Calendar.getInstance();
@@ -55,5 +62,16 @@ public class Utils {
             valor = r.nextInt(5000);
         }
         return valor;
+    }
+     
+    public static void reportarTiempo(String funcion, String marca, NodoRF origen){
+        if(informarTiempo){
+            try {
+                Mensaje mensaje = new Mensaje(funcion, marca, origen, new NodoRF(servidorTiempo,1500));
+                ConexionUtils.obtenerInstancia().enviarMensaje(mensaje);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

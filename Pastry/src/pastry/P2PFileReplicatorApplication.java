@@ -1,6 +1,9 @@
 package pastry;
 
 import Dominio.Sistema;
+import com.Entidades.Nodo;
+import com.Entidades.NodoRF;
+import com.Utils.SistemaUtil;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +15,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -108,7 +114,15 @@ public class P2PFileReplicatorApplication extends JFrame{
 			final String bootaddress = bootAddressText.getText();
 			final int bootport = Integer.parseInt(bootPortText.getText());
 			user = userNameText.getText();
-			Thread startNode = new Thread(new Runnable() {
+                        Utils.nodename =  user;
+                        Utils.nodeport = bootport;
+                        SistemaUtil.servidorTiempo = bootaddress;
+                        try {
+                            SistemaUtil.reportarTiempo("addnode", "inicio", new NodoRF(Utils.nodename,Utils.nodeport));
+                        } catch (NoSuchAlgorithmException ex) {
+                            Logger.getLogger(P2PFileReplicatorApplication.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        Thread startNode = new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -154,18 +168,24 @@ public class P2PFileReplicatorApplication extends JFrame{
     
     private class DownloadListener implements ActionListener{
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Thread startSearch = new Thread(new Runnable() {	
-				@Override
-				public void run() {
-                                 //Inicio de busqueda
-                                 node.searchFile(searchfileText.getText());
-				}
-			});
-			startSearch.start();
-						
-		}
+        @Override
+        public void actionPerformed(ActionEvent e) {
+                Thread startSearch = new Thread(new Runnable() {	
+                        @Override
+                        public void run() {
+                            try {
+                                //Inicio de busqueda
+                                SistemaUtil.reportarTiempo("search", "inicio", new NodoRF(Utils.nodename,Utils.nodeport));
+                                node.searchFile(searchfileText.getText());
+                            } catch (NoSuchAlgorithmException ex) {
+                                Logger.getLogger(P2PFileReplicatorApplication.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                           
+                        }
+                });
+                startSearch.start();
+
+        }
     	
     }
     
@@ -218,8 +238,6 @@ public class P2PFileReplicatorApplication extends JFrame{
 	
     
     public static void main(String[] args) throws Exception {
-      
-        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
